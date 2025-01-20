@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faturamento Mensal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f9;
+    }
+    h1 {
+      color: #333;
+    }
+    .resultados {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .resultado {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    .label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Resultados de Faturamento Mensal</h1>
+  
+  <div id="resultados" class="resultados">
+    <div id="menorValor" class="resultado"></div>
+    <div id="maiorValor" class="resultado"></div>
+    <div id="diasAcimaDaMedia" class="resultado"></div>
+  </div>
+
+  <script>
+    function carregarFaturamento(caminhoArquivo) {
+      return fetch(caminhoArquivo)
+        .then(response => response.json())
+        .catch(erro => {
+          console.error("Erro ao carregar o arquivo:", erro);
+          return [];
+        });
+    }
+
+    carregarFaturamento('faturamento.json').then(faturamento => {
+      let menorValor = Infinity;
+      let maiorValor = -Infinity;
+      let totalFaturamento = 0;
+      let diasComFaturamento = 0;
+
+      for (let i = 0; i < faturamento.length; i++) {
+        let valor = faturamento[i].valor;
+        
+        if (valor > 0) {
+          if (valor < menorValor) menorValor = valor;
+          if (valor > maiorValor) maiorValor = valor;
+          totalFaturamento += valor;
+          diasComFaturamento++;
+        }
+      }
+
+      let mediaMensal = totalFaturamento / diasComFaturamento;
+
+      let diasAcimaDaMedia = 0;
+      for (let i = 0; i < faturamento.length; i++) {
+        if (faturamento[i].valor > mediaMensal) {
+          diasAcimaDaMedia++;
+        }
+      }
+
+      document.getElementById('menorValor').innerHTML = 
+        `<span class="label">Menor valor de faturamento:</span> R$ ${menorValor.toFixed(2)}`;
+      document.getElementById('maiorValor').innerHTML = 
+        `<span class="label">Maior valor de faturamento:</span> R$ ${maiorValor.toFixed(2)}`;
+      document.getElementById('diasAcimaDaMedia').innerHTML = 
+        `<span class="label">Número de dias com faturamento superior à média mensal:</span> ${diasAcimaDaMedia}`;
+    });
+  </script>
+
+</body>
+</html>
+
