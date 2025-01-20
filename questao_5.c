@@ -9,7 +9,7 @@ int main()
     int i, j;
 
     printf("Digite uma string: ");
-    fgets(string, sizeof(string), stdin);
+    fgets(string, TAM_MAX, stdin);
 
     string[strcspn(string, "\n")] = '\0';
 
